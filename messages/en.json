@@ -1,0 +1,34 @@
+{
+  "nav": {
+    "home": "Home",
+    "about": "About",
+    "services": "Services",
+    "contact": "Contact",
+    "blog": "Blog"
+  },
+  "home": {
+    "title": "To get started, edit the page.tsx file.",
+    "description": "Looking for a starting point or more instructions? Head over to Templates or the Learning center.",
+    "templates": "Templates",
+    "learning": "Learning",
+    "deployNow": "Deploy Now",
+    "documentation": "Documentation",
+    "welcome": "Welcome to Dandindun",
+    "subtitle": "Multi-language Next.js Application"
+  },
+  "language": "Language",
+  "common": {
+    "loading": "Loading...",
+    "error": "An error occurred",
+    "success": "Success!",
+    "back": "Back",
+    "next": "Next",
+    "close": "Close"
+  },
+  "footer": {
+    "copyright": "© 2025 Dandindun. All rights reserved.",
+    "privacy": "Privacy Policy",
+    "terms": "Terms of Service",
+    "contact": "Contact Us"
+  }
+}
