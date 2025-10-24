@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/components/AuthProvider";
 import { usePermission } from "@/hooks/usePermission";
+import { AdminLayout } from "@/components/AdminLayout";
 import { getAllUsers, updateUserRole } from "@/lib/auth-service";
 import { User, UserRole } from "@/lib/types/auth";
 import { Button } from "@/components/ui/button";
@@ -32,20 +33,13 @@ import {
 } from "@/components/ui/select";
 import { ArrowLeft, Loader2 } from "lucide-react";
 
-export default function AdminPage() {
+function AdminUsersContent() {
   const router = useRouter();
   const { session } = useAuth();
   const { checkRole } = usePermission();
   const [users, setUsers] = useState<User[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [updatingUserId, setUpdatingUserId] = useState<string | null>(null);
-
-  // Check admin access
-  useEffect(() => {
-    if (!session.isLoading && !checkRole("admin")) {
-      router.push("/dashboard");
-    }
-  }, [session.isLoading, checkRole, router]);
 
   // Load users
   useEffect(() => {
@@ -191,5 +185,13 @@ export default function AdminPage() {
         </Card>
       </div>
     </div>
+  );
+}
+
+export default function AdminUsersPage() {
+  return (
+    <AdminLayout>
+      <AdminUsersContent />
+    </AdminLayout>
   );
 }
