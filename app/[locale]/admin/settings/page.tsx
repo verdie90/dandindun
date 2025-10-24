@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/components/AuthProvider";
 import { usePermission } from "@/hooks/usePermission";
+import { ProtectedPage } from "@/components/ProtectedPage";
 import { AdminLayout } from "@/components/AdminLayout";
 import {
   getAppSettings,
@@ -35,7 +36,7 @@ import { ArrowLeft, AlertCircle, CheckCircle, Settings } from "lucide-react";
 function SettingsPageContent() {
   const router = useRouter();
   const { session } = useAuth();
-  const { checkRole } = usePermission();
+  const { checkRole, canUpdate } = usePermission();
 
   const [settings, setSettings] = useState<AppSettings | null>(null);
   const [isLoading, setIsLoading] = useState(true);
@@ -413,7 +414,8 @@ function SettingsPageContent() {
           <div className="flex gap-4">
             <Button
               type="submit"
-              disabled={isSaving}
+              disabled={isSaving || !canUpdate("/admin/settings")}
+              title={!canUpdate("/admin/settings") ? "You don't have permission to update settings" : ""}
               className="gap-2"
             >
               {isSaving ? (
@@ -441,8 +443,13 @@ function SettingsPageContent() {
 
 export default function SettingsPage() {
   return (
-    <AdminLayout>
-      <SettingsPageContent />
-    </AdminLayout>
+    <ProtectedPage 
+      requiredPage="/admin/settings"
+      requiredOperations={["READ"]}
+    >
+      <AdminLayout>
+        <SettingsPageContent />
+      </AdminLayout>
+    </ProtectedPage>
   );
 }

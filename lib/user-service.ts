@@ -263,6 +263,7 @@ export const getUserStats = async () => {
     const snapshot = await getDocs(usersRef);
 
     const roles: Record<UserRole, number> = {
+      super_admin: 0,
       admin: 0,
       moderator: 0,
       user: 0,
@@ -282,5 +283,219 @@ export const getUserStats = async () => {
   } catch (error) {
     console.error("Failed to get user stats:", error);
     return { total: 0, admin: 0, moderator: 0, user: 0 };
+  }
+};
+
+/**
+ * Update user role (admin operation)
+ */
+export const updateUserRole = async (
+  userId: string,
+  newRole: UserRole
+): Promise<void> => {
+  try {
+    await updateDoc(doc(db, USERS_COLLECTION, userId), {
+      role: newRole,
+      updatedAt: new Date().toISOString(),
+    });
+  } catch (error) {
+    throw new Error("Failed to update user role");
+  }
+};
+
+/**
+ * Update multiple user fields
+ */
+export const updateUserFields = async (
+  userId: string,
+  fields: Partial<User>
+): Promise<void> => {
+  try {
+    await updateDoc(doc(db, USERS_COLLECTION, userId), {
+      ...fields,
+      updatedAt: new Date().toISOString(),
+    });
+  } catch (error) {
+    throw new Error("Failed to update user fields");
+  }
+};
+
+/**
+ * Get user by email
+ */
+export const getUserByEmail = async (email: string): Promise<User | null> => {
+  try {
+    const usersRef = collection(db, USERS_COLLECTION);
+    const q = query(usersRef, where("email", "==", email));
+    const snapshot = await getDocs(q);
+
+    if (snapshot.empty) {
+      return null;
+    }
+
+    const doc = snapshot.docs[0];
+    const data = doc.data();
+    return {
+      id: doc.id,
+      email: data.email,
+      name: data.name,
+      role: data.role,
+      isActive: data.isActive ?? true,
+      createdAt: data.createdAt?.toDate?.() || new Date(),
+      updatedAt: data.updatedAt?.toDate?.() || new Date(),
+    } as User;
+  } catch (error) {
+    console.error("Failed to get user by email:", error);
+    return null;
+  }
+};
+
+/**
+ * Check if user exists by ID
+ */
+export const userExists = async (userId: string): Promise<boolean> => {
+  try {
+    const userDoc = await getDoc(doc(db, USERS_COLLECTION, userId));
+    return userDoc.exists();
+  } catch (error) {
+    console.error("Failed to check user existence:", error);
+    return false;
+  }
+};
+
+/**
+ * Check if email is unique
+ */
+export const isEmailUnique = async (email: string, excludeUserId?: string): Promise<boolean> => {
+  try {
+    const usersRef = collection(db, USERS_COLLECTION);
+    const q = query(usersRef, where("email", "==", email));
+    const snapshot = await getDocs(q);
+
+    if (snapshot.empty) {
+      return true;
+    }
+
+    // If excluding a user, check if only that user has this email
+    if (excludeUserId) {
+      return snapshot.docs.length === 1 && snapshot.docs[0].id === excludeUserId;
+    }
+
+    return false;
+  } catch (error) {
+    console.error("Failed to check email uniqueness:", error);
+    return false;
+  }
+};
+
+/**
+ * Get total user count
+ */
+export const getTotalUserCount = async (): Promise<number> => {
+  try {
+    const usersRef = collection(db, USERS_COLLECTION);
+    const snapshot = await getDocs(usersRef);
+    return snapshot.size;
+  } catch (error) {
+    console.error("Failed to get user count:", error);
+    return 0;
+  }
+};
+
+/**
+ * Get active users count
+ */
+export const getActiveUsersCount = async (): Promise<number> => {
+  try {
+    const usersRef = collection(db, USERS_COLLECTION);
+    const q = query(
+      usersRef,
+      where("isActive", "==", true)
+    );
+    const snapshot = await getDocs(q);
+    return snapshot.size;
+  } catch (error) {
+    console.error("Failed to get active users count:", error);
+    return 0;
+  }
+};
+
+/**
+ * Get recent users (created in last N days)
+ */
+export const getRecentUsers = async (days: number = 7): Promise<User[]> => {
+  try {
+    const usersRef = collection(db, USERS_COLLECTION);
+    const cutoffDate = new Date();
+    cutoffDate.setDate(cutoffDate.getDate() - days);
+
+    const snapshot = await getDocs(usersRef);
+
+    return snapshot.docs
+      .map((doc) => {
+        const data = doc.data();
+        return {
+          id: doc.id,
+          email: data.email,
+          name: data.name,
+          role: data.role,
+          isActive: data.isActive ?? true,
+          createdAt: data.createdAt?.toDate?.() || new Date(),
+          updatedAt: data.updatedAt?.toDate?.() || new Date(),
+        } as User;
+      })
+      .filter((user) => user.createdAt >= cutoffDate)
+      .sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime());
+  } catch (error) {
+    console.error("Failed to get recent users:", error);
+    return [];
+  }
+};
+
+/**
+ * Admin: Reset user password without verification
+ */
+export const adminResetPassword = async (
+  userId: string,
+  newPassword: string
+): Promise<void> => {
+  try {
+    const { hashPassword } = await import("./auth-service");
+    
+    await setDoc(
+      doc(db, `${USERS_COLLECTION}/${userId}/credentials`, "password"),
+      {
+        hash: hashPassword(newPassword),
+        updatedAt: new Date().toISOString(),
+      }
+    );
+
+    await logActivity(userId, "PASSWORD_RESET_BY_ADMIN", "Password reset by administrator");
+  } catch (error) {
+    throw new Error("Failed to reset password");
+  }
+};
+
+/**
+ * Verify user exists and return basic info
+ */
+export const getUserBasicInfo = async (
+  userId: string
+): Promise<{ id: string; name: string; email: string } | null> => {
+  try {
+    const userDoc = await getDoc(doc(db, USERS_COLLECTION, userId));
+    if (!userDoc.exists()) {
+      return null;
+    }
+
+    const data = userDoc.data();
+    return {
+      id: userDoc.id,
+      name: data.name,
+      email: data.email,
+    };
+  } catch (error) {
+    console.error("Failed to get user basic info:", error);
+    return null;
   }
 };

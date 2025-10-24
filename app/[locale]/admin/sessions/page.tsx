@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/components/AuthProvider";
 import { usePermission } from "@/hooks/usePermission";
+import { ProtectedPage } from "@/components/ProtectedPage";
 import { AdminLayout } from "@/components/AdminLayout";
 import {
   getAllActiveSessions,
@@ -35,7 +36,7 @@ import { ArrowLeft, LogOut, AlertCircle, CheckCircle } from "lucide-react";
 function SessionsContent() {
   const router = useRouter();
   const { session } = useAuth();
-  const { checkRole } = usePermission();
+  const { checkRole, isOperationAllowed } = usePermission();
 
   const [sessions, setSessions] = useState<Session[]>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -285,8 +286,13 @@ function SessionsContent() {
 
 export default function SessionsPage() {
   return (
-    <AdminLayout>
-      <SessionsContent />
-    </AdminLayout>
+    <ProtectedPage 
+      requiredPage="/admin/logs"
+      requiredOperations={["READ"]}
+    >
+      <AdminLayout>
+        <SessionsContent />
+      </AdminLayout>
+    </ProtectedPage>
   );
 }

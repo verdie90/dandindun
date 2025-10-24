@@ -1,6 +1,7 @@
 "use client";
 
 import React, { createContext, useContext, useEffect, useState } from "react";
+import { Toaster } from "@/components/ui/sonner";
 import {
   User,
   AuthSession,
@@ -231,6 +232,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       }}
     >
       {children}
+      <Toaster />
     </AuthContext.Provider>
   );
 }
