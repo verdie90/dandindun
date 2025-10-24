@@ -1,67 +1,181 @@
 "use client";
 
-import Image from "next/image";
 import { useTranslations } from "next-intl";
 import { LanguageSwitcher } from "@/components/LanguageSwitcher";
+import { ThemeSwitcher } from "@/components/ThemeSwitcher";
+import { Button } from "@/components/ui/button";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { ArrowRight, Zap, Globe, Code } from "lucide-react";
 
 export default function Home() {
   const t = useTranslations();
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex min-h-screen w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <div className="flex justify-between items-center w-full">
-          <Image
-            className="dark:invert"
-            src="/next.svg"
-            alt="Next.js logo"
-            width={100}
-            height={20}
-            priority
-          />
-          <LanguageSwitcher />
+    <div className="min-h-screen bg-background text-foreground">
+      {/* Header */}
+      <header className="border-b border-border bg-card">
+        <div className="container mx-auto px-4 py-6 flex justify-between items-center">
+          <div>
+            <h1 className="text-2xl font-bold">Dandindun</h1>
+            <p className="text-sm text-muted-foreground">{t("home.subtitle")}</p>
+          </div>
+          <div className="flex gap-2">
+            <LanguageSwitcher />
+            <ThemeSwitcher />
+          </div>
         </div>
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            {t("home.title")}
-          </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            {t("home.description")}{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              {t("home.templates")}
-            </a>{" "}
-            {t("home.learning")}
+      </header>
+
+      {/* Main Content */}
+      <main className="container mx-auto px-4 py-12">
+        {/* Hero Section */}
+        <section className="mb-16 text-center">
+          <h2 className="text-4xl md:text-5xl font-bold mb-4">
+            {t("home.welcome")}
+          </h2>
+          <p className="text-xl text-muted-foreground mb-8 max-w-2xl mx-auto">
+            {t("home.description")}
           </p>
-        </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={16}
-            />
-            {t("home.deployNow")}
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            {t("home.documentation")}
-          </a>
-        </div>
+          <div className="flex flex-wrap gap-4 justify-center">
+            <Button size="lg">
+              {t("home.deployNow")}
+              <ArrowRight className="ml-2 h-4 w-4" />
+            </Button>
+            <Button size="lg" variant="outline">
+              {t("home.documentation")}
+            </Button>
+          </div>
+        </section>
+
+        {/* Features Section */}
+        <section className="mb-16">
+          <h3 className="text-2xl font-bold mb-8 text-center">Features</h3>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            {/* Multi-Language Card */}
+            <Card>
+              <CardHeader>
+                <Globe className="h-8 w-8 mb-2 text-primary" />
+                <CardTitle>{t("nav.home")}</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <CardDescription>
+                  Multi-language support with seamless switching between Indonesian and English
+                </CardDescription>
+              </CardContent>
+            </Card>
+
+            {/* Dark/Light Theme Card */}
+            <Card>
+              <CardHeader>
+                <Zap className="h-8 w-8 mb-2 text-primary" />
+                <CardTitle>Dark/Light Theme</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <CardDescription>
+                  Beautiful dark and light themes with system preference detection
+                </CardDescription>
+              </CardContent>
+            </Card>
+
+            {/* shadcn UI Card */}
+            <Card>
+              <CardHeader>
+                <Code className="h-8 w-8 mb-2 text-primary" />
+                <CardTitle>shadcn/ui</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <CardDescription>
+                  Pre-built, accessible components to build your applications faster
+                </CardDescription>
+              </CardContent>
+            </Card>
+          </div>
+        </section>
+
+        {/* Quick Start Section */}
+        <section className="bg-card border border-border rounded-lg p-8 mb-16">
+          <h3 className="text-2xl font-bold mb-4">Quick Start</h3>
+          <div className="space-y-4">
+            <div className="flex gap-4">
+              <div className="flex-shrink-0 w-8 h-8 rounded-full bg-primary text-primary-foreground flex items-center justify-center font-bold">
+                1
+              </div>
+              <div>
+                <h4 className="font-semibold">Switch Language</h4>
+                <p className="text-sm text-muted-foreground">
+                  Click the language switcher in the header to change between Indonesian and English
+                </p>
+              </div>
+            </div>
+            <div className="flex gap-4">
+              <div className="flex-shrink-0 w-8 h-8 rounded-full bg-primary text-primary-foreground flex items-center justify-center font-bold">
+                2
+              </div>
+              <div>
+                <h4 className="font-semibold">Toggle Theme</h4>
+                <p className="text-sm text-muted-foreground">
+                  Use the theme switcher to toggle between light, dark, and system modes
+                </p>
+              </div>
+            </div>
+            <div className="flex gap-4">
+              <div className="flex-shrink-0 w-8 h-8 rounded-full bg-primary text-primary-foreground flex items-center justify-center font-bold">
+                3
+              </div>
+              <div>
+                <h4 className="font-semibold">Start Building</h4>
+                <p className="text-sm text-muted-foreground">
+                  Use shadcn/ui components to build your application
+                </p>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {/* Links Section */}
+        <section className="text-center">
+          <h3 className="text-2xl font-bold mb-4">Resources</h3>
+          <div className="flex flex-wrap gap-4 justify-center">
+            <a
+              href="https://nextjs.org"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-primary hover:underline"
+            >
+              Next.js Documentation
+            </a>
+            <a
+              href="https://next-intl-docs.vercel.app"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-primary hover:underline"
+            >
+              next-intl Docs
+            </a>
+            <a
+              href="https://ui.shadcn.com"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-primary hover:underline"
+            >
+              shadcn/ui Components
+            </a>
+          </div>
+        </section>
       </main>
+
+      {/* Footer */}
+      <footer className="border-t border-border mt-16 py-8 bg-card">
+        <div className="container mx-auto px-4 text-center text-muted-foreground">
+          <p>{t("footer.copyright")}</p>
+        </div>
+      </footer>
     </div>
   );
 }
